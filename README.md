@@ -35,6 +35,8 @@
 ---
 
 ### 📢 最新动态
+> **2026-07-26** · 🤖 大模型预报区完善：将 `noaa-oar-mlwp-data` S3 桶的**目录结构与命名规则**（模型码 `FOUR`/`PANG`/`GRAP`、版本号、`GFS`/`IFS` 初始化系统、起报时刻等字段）及 **FourCastNet v1 / v2-small / Pangu-Weather / GraphCast Operational** 各模型可用变量清单**内联**进 AI 模型集合条目（中英同步），关键访问信息不再仅外链 txt 原文
+>
 > **2026-06-20** · 🗂️ 重构 IRI Data Library 与 CMEMS 条目：IRI 收敛为「再分析」入口并按数据类型将数据集分散到各主题章节（各条目标 `via IRI`，附**已登录实测**的 `SOURCES/...` 路径），新增 COADS / Levitus / ISCCP / NMME / ENSO-PDO-QBO 条目；CMEMS 拆分为门户 + GLORYS / WAVERY / BGC / DUACS / OSTIA 五个独立条目（OPeNDAP/THREDDS 已退役，现经 Marine Data Store）。实测发现 IRI 不含 ERA5 / MERRA-2 / SODA，已移除相关条目。
 >
 > **2026-06-18** · 🔐 新增 IRI Data Library、扩充 NASA Earthdata（MERRA-2/GPM/MODIS LST/AIRS/CERES/AVHRR SST/CCMP/OSCAR/SMAP/GRACE/GLDAS/NSIDC 海冰/MODIS 积雪/CALIPSO）与 CMEMS 的详细条目，标注认证要求与 short_name；数据源均经可通联性验证
@@ -489,6 +491,42 @@ North American Multi-Model Ensemble：多机构耦合模式季节预报 + 回报
 
 <details>
 <summary><b>AI 模型集合</b> · Aurora / FourCastNet / GraphCast / PANGU</summary>
+
+<details>
+<summary>📖 目录结构与命名规则</summary>
+
+公开 S3 桶 `noaa-oar-mlwp-data`（AWS，无需鉴权）。文件路径：
+
+```
+s3://noaa-oar-mlwp-data/MMMM_vNNN_III/YYYY/mmdd/MMMM_vNNN_III_YYYYmmddhh_fXXX_fYYY_ZZ.nc
+```
+
+| 字段 | 含义 | 取值 |
+|:----:|:-----|:-----|
+| `MMMM` | 模型代码 | `FOUR` / `PANG` / `GRAP` |
+| `NNN` | 版本号 | `100`、`200` |
+| `III` | 初始条件系统 | `GFS`（全期）；`IFS`（2025-01 起） |
+| `YYYY`/`mm`/`dd` | 起报日期 | 年 / 月 / 日 |
+| `hh` | 起报时刻 (UTC) | `00`、`06`、`12`、`18` |
+| `XXX` / `YYY` | 单文件首 / 末预报时 | `000` / `240` |
+| `ZZ` | 预报步长 (h) | `06` |
+
+起报时刻：00 / 12 UTC 全年可用；06 / 18 UTC 仅 2023 年提供。
+
+</details>
+
+<details>
+<summary>📋 各模型可用变量</summary>
+
+**FourCastNet v1**：10 m / 100 m 风（u、v）、2 m 温度、地面气压、海平面气压、整层水汽；位势 / 温度 / u-v 风（1000、850、500、250 hPa，位势含 50 hPa）；相对湿度（850、500 hPa）。
+
+**FourCastNet v2-small**：10 m / 100 m 风（u、v）、2 m 温度、地面气压、海平面气压、整层水汽；位势 / 温度 / u-v 风 / 相对湿度（1000、925、850、700、600、500、400、300、250、200、150、100、50 hPa）。
+
+**Pangu-Weather**：10 m 风（u、v）、2 m 温度、海平面气压；位势 / 温度 / u-v 风 / 比湿（1000、925、850、700、600、500、400、300、250、200、150、100、50 hPa）。
+
+**GraphCast Operational**：10 m 风（u、v）、2 m 温度、海平面气压；位势 / 温度 / u-v 风 / 比湿 / 垂直速度（同上 13 层）；6 h 累积降水。
+
+</details>
 
 ---
 

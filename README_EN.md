@@ -35,6 +35,8 @@ This repository is the **resource guide** — it focuses on “what data exists 
 ---
 
 ### 📢 Latest Updates
+> **2026-07-26** · 🤖 AI-model section expanded: inlined the `noaa-oar-mlwp-data` S3 bucket **directory structure & naming** (model code `FOUR`/`PANG`/`GRAP`, version, `GFS`/`IFS` init system, init time, forecast-hour fields) and the **FourCastNet v1 / v2-small / Pangu-Weather / GraphCast Operational** variable lists into the AI Model Collection entry (zh + en), so key access details no longer live only behind the linked txt file
+>
 > **2026-06-20** · 🗂️ Restructured IRI Data Library & CMEMS entries: IRI is now a "Reanalysis" entrypoint with datasets distributed into their topical sections by data type (each tagged `via IRI`, with **login-verified** `SOURCES/...` paths); added COADS / Levitus / ISCCP / NMME / ENSO-PDO-QBO entries. CMEMS split into a portal block + GLORYS / WAVERY / BGC / DUACS / OSTIA standalone entries (OPeNDAP/THREDDS retired, now via Marine Data Store). Live probing found IRI does NOT host ERA5 / MERRA-2 / SODA — removed from entries.
 >
 > **2026-06-18** · 🔐 Added IRI Data Library; expanded NASA Earthdata entries (MERRA-2 / GPM IMERG / MODIS LST / AIRS / CERES / CALIPSO / AVHRR OI SST / CCMP Winds / OSCAR / SMAP / GRACE-FO / GLDAS / NSIDC Sea Ice CDR / MODIS Snow Cover) and CMEMS with authentication requirements & short_names; all entries connectivity-verified
@@ -489,6 +491,42 @@ North American Multi-Model Ensemble: multi-institution coupled-model seasonal fo
 
 <details>
 <summary><b>AI Model Collection</b> · Aurora / FourCastNet / GraphCast / PANGU</summary>
+
+<details>
+<summary>📖 Directory structure & naming</summary>
+
+Public S3 bucket `noaa-oar-mlwp-data` (AWS, no auth). File path:
+
+```
+s3://noaa-oar-mlwp-data/MMMM_vNNN_III/YYYY/mmdd/MMMM_vNNN_III_YYYYmmddhh_fXXX_fYYY_ZZ.nc
+```
+
+| Field | Meaning | Values |
+|:----:|:-----|:-----|
+| `MMMM` | Model code | `FOUR` / `PANG` / `GRAP` |
+| `NNN` | Version | `100`, `200` |
+| `III` | Initial-condition system | `GFS` (full period); `IFS` (from 2025-01) |
+| `YYYY`/`mm`/`dd` | Init date | year / month / day |
+| `hh` | Init time (UTC) | `00`, `06`, `12`, `18` |
+| `XXX` / `YYY` | First / last forecast hour in file | `000` / `240` |
+| `ZZ` | Forecast step (h) | `06` |
+
+Init times: 00 / 12 UTC available all years; 06 / 18 UTC available for 2023 only.
+
+</details>
+
+<details>
+<summary>📋 Variables by model</summary>
+
+**FourCastNet v1**: 10 m / 100 m wind (u, v), 2 m temp, surface pressure, MSL pressure, total column water vapor; geopotential / temperature / u-v wind (1000, 850, 500, 250 hPa; geopotential also 50 hPa); relative humidity (850, 500 hPa).
+
+**FourCastNet v2-small**: 10 m / 100 m wind (u, v), 2 m temp, surface pressure, MSL pressure, total column water vapor; geopotential / temperature / u-v wind / relative humidity (1000, 925, 850, 700, 600, 500, 400, 300, 250, 200, 150, 100, 50 hPa).
+
+**Pangu-Weather**: 10 m wind (u, v), 2 m temp, MSL pressure; geopotential / temperature / u-v wind / specific humidity (1000, 925, 850, 700, 600, 500, 400, 300, 250, 200, 150, 100, 50 hPa).
+
+**GraphCast Operational**: 10 m wind (u, v), 2 m temp, MSL pressure; geopotential / temperature / u-v wind / specific humidity / vertical velocity (same 13 levels); 6-h accumulated precipitation.
+
+</details>
 
 ---
 
