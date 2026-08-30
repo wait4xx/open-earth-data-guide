@@ -22,9 +22,21 @@
 import { execSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 
 const STATS_DIR = path.join(process.cwd(), "docs", "stats");
 const NPM_WINDOW_DAYS = 180;
+
+// The genuine hand-drawn font star-history embeds, so <img>-rendered SVGs
+// (no external resource loading) can use it. Optional sidecar file; charts
+// fall back to a system font stack when absent.
+const FONT_B64 = (() => {
+	try {
+		return fs.readFileSync(fileURLToPath(new URL("xkcd.b64", import.meta.url)), "utf8").trim();
+	} catch {
+		return "";
+	}
+})();
 
 // ---------------------------------------------------------------- data fetch
 
@@ -85,12 +97,12 @@ function fmtNum(n) {
  * points: [{date: "YYYY-MM-DD", value}] in chronological order.
  */
 function lineChart({ name, stats, points, color }) {
-	const W = 880;
-	const H = 520;
-	const M = { top: 40, right: 30, bottom: 48, left: 74 };
+	// star-history geometry: 800x533 canvas, plot translated by (70, 60)
+	const W = 800;
+	const H = 533;
+	const M = { top: 60, right: 30, bottom: 50, left: 70 };
 	const iw = W - M.left - M.right;
 	const ih = H - M.top - M.bottom;
-	const FONT = `xkcd, 'Comic Sans MS', 'Comic Sans', 'Segoe Print', 'Chalkboard SE', cursive`;
 
 	const noData = points.length === 0;
 	const maxValue = noData ? 1 : Math.max(...points.map((p) => p.value), 1);
@@ -107,7 +119,21 @@ function lineChart({ name, stats, points, color }) {
 		h = (h * 1274126177) % 4294967296;
 		return (((h >>> 8) % 1000) / 1000 - 0.5) * 3.6;
 	};
-	const line = points.map((p, i) => `${x(p).toFixed(1)},${(y(p.value) + wob(i)).toFixed(1)}`);
+	// wobbled points -> one smooth hand-drawn-looking path (quadratic through
+	// midpoints; straight only when the series has fewer than 3 points)
+	const pts = points.map((p, i) => [x(p), y(p.value) + wob(i)]);
+	let d = "";
+	if (pts.length === 2) {
+		d = `M ${pts[0].map((v) => v.toFixed(1)).join(" ")} L ${pts[1].map((v) => v.toFixed(1)).join(" ")}`;
+	} else if (pts.length > 2) {
+		d = `M ${pts[0].map((v) => v.toFixed(1)).join(" ")}`;
+		for (let i = 1; i < pts.length - 1; i++) {
+			const mx = (pts[i][0] + pts[i + 1][0]) / 2;
+			const my = (pts[i][1] + pts[i + 1][1]) / 2;
+			d += ` Q ${pts[i].map((v) => v.toFixed(1)).join(" ")} ${mx.toFixed(1)} ${my.toFixed(1)}`;
+		}
+		d += ` L ${pts.at(-1).map((v) => v.toFixed(1)).join(" ")}`;
+	}
 
 	const fracs = [0, 0.25, 0.5, 0.75, 1];
 	const fmtDay = (frac) => {
@@ -124,13 +150,16 @@ function lineChart({ name, stats, points, color }) {
 	const legendH = stats ? 54 : 34;
 
 	const seriesSvg = noData
-		? `<text x="${M.left + iw / 2}" y="${M.top + ih / 2}" text-anchor="middle" font-size="16" fill="#57606a">no data yet</text>`
+		? `<text x="${M.left + iw / 2}" y="${M.top + ih / 2}" text-anchor="middle" font-size="18" fill="#57606a">no data yet</text>`
 		: points.length === 1
 			? `<circle cx="${(M.left + iw / 2).toFixed(1)}" cy="${y(points[0].value).toFixed(1)}" r="4" fill="${color}"/>`
-			: `<polyline points="${line.join(" ")}" fill="none" stroke="${color}" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>`;
+			: `<path d="${d}" fill="none" stroke="${color}" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>`;
 
 	return [
-		`<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" font-family="${FONT}">`,
+		`<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" style="font-family:xkcd, 'Comic Sans MS', 'Segoe Print', cursive;background:#fff">`,
+		...(FONT_B64
+			? [`<defs><style>@font-face{font-family:"xkcd";src:url(data:application/font-woff;charset=utf-8;base64,${FONT_B64})}</style></defs>`]
+			: []),
 		`<rect width="${W}" height="${H}" fill="#ffffff"/>`,
 		// interior dotted grid (horizontal)
 		...[0.25, 0.5, 0.75].map(
@@ -145,7 +174,7 @@ function lineChart({ name, stats, points, color }) {
 					const label = fmtNum(Math.round(maxValue * f));
 					if (seen.has(label)) return "";
 					seen.add(label);
-					return `<text x="${M.left - 10}" y="${(M.top + ih - f * ih + 5).toFixed(1)}" text-anchor="end" font-size="13" fill="#57606a">${label}</text>`;
+					return `<text x="${M.left - 10}" y="${(M.top + ih - f * ih + 5).toFixed(1)}" text-anchor="end" font-size="15" fill="#57606a">${label}</text>`;
 				})
 				.filter(Boolean);
 		})(),
@@ -155,7 +184,7 @@ function lineChart({ name, stats, points, color }) {
 			: fracs.map((f) => {
 				const tx = M.left + f * iw;
 				const anchor = f === 0 ? "start" : f === 1 ? "end" : "middle";
-				return `<line x1="${tx.toFixed(1)}" y1="${M.top + ih}" x2="${tx.toFixed(1)}" y2="${M.top + ih + 7}" stroke="#8b98a5" stroke-width="1.5"/><text x="${(f === 0 ? tx + 2 : f === 1 ? tx - 2 : tx).toFixed(1)}" y="${M.top + ih + 26}" text-anchor="${anchor}" font-size="13" fill="#57606a">${esc(fmtDay(f))}</text>`;
+				return `<line x1="${tx.toFixed(1)}" y1="${M.top + ih}" x2="${tx.toFixed(1)}" y2="${M.top + ih + 7}" stroke="#8b98a5" stroke-width="1.5"/><text x="${(f === 0 ? tx + 2 : f === 1 ? tx - 2 : tx).toFixed(1)}" y="${M.top + ih + 26}" text-anchor="${anchor}" font-size="15" fill="#57606a">${esc(fmtDay(f))}</text>`;
 			})),
 		// plot frame (drawn after grid so its edges stay crisp)
 		`<rect x="${M.left}" y="${M.top}" width="${iw}" height="${ih}" fill="none" stroke="#8b98a5" stroke-width="2" rx="3"/>`,
@@ -164,8 +193,8 @@ function lineChart({ name, stats, points, color }) {
 		// legend
 		`<rect x="${lx}" y="${ly}" width="${legendW}" height="${legendH}" fill="#ffffff" stroke="#8b98a5" stroke-width="1.5" rx="6"/>`,
 		`<line x1="${lx + 12}" y1="${ly + 17}" x2="${lx + 36}" y2="${ly + 17}" stroke="${color}" stroke-width="3" stroke-linecap="round"/>`,
-		`<text x="${lx + 44}" y="${ly + 22}" font-size="14" fill="#1f2328">${esc(name)}</text>`,
-		...(stats ? [`<text x="${lx + 12}" y="${ly + 42}" font-size="12" fill="#57606a">${esc(stats)}</text>`] : []),
+		`<text x="${lx + 44}" y="${ly + 22}" font-size="15" fill="#1f2328">${esc(name)}</text>`,
+		...(stats ? [`<text x="${lx + 12}" y="${ly + 42}" font-size="13" fill="#57606a">${esc(stats)}</text>`] : []),,
 		`</svg>`,
 	].join("\n");
 }
