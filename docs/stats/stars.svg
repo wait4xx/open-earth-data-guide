@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="880" height="520" viewBox="0 0 880 520" font-family="xkcd, 'Comic Sans MS', 'Comic Sans', 'Segoe Print', 'Chalkboard SE', cursive">
+<rect width="880" height="520" fill="#ffffff"/>
+<line x1="74" y1="364.0" x2="850" y2="364.0" stroke="#d0d7de" stroke-width="1.5" stroke-dasharray="2 7"/>
+<line x1="74" y1="256.0" x2="850" y2="256.0" stroke="#d0d7de" stroke-width="1.5" stroke-dasharray="2 7"/>
+<line x1="74" y1="148.0" x2="850" y2="148.0" stroke="#d0d7de" stroke-width="1.5" stroke-dasharray="2 7"/>
+<text x="64" y="477.0" text-anchor="end" font-size="13" fill="#57606a">0</text>
+<text x="64" y="369.0" text-anchor="end" font-size="13" fill="#57606a">14</text>
+<text x="64" y="261.0" text-anchor="end" font-size="13" fill="#57606a">27</text>
+<text x="64" y="153.0" text-anchor="end" font-size="13" fill="#57606a">41</text>
+<text x="64" y="45.0" text-anchor="end" font-size="13" fill="#57606a">54</text>
+<line x1="74.0" y1="472" x2="74.0" y2="479" stroke="#8b98a5" stroke-width="1.5"/><text x="76.0" y="498" text-anchor="start" font-size="13" fill="#57606a">2025-11-27</text>
+<line x1="268.0" y1="472" x2="268.0" y2="479" stroke="#8b98a5" stroke-width="1.5"/><text x="268.0" y="498" text-anchor="middle" font-size="13" fill="#57606a">2026-02-03</text>
+<line x1="462.0" y1="472" x2="462.0" y2="479" stroke="#8b98a5" stroke-width="1.5"/><text x="462.0" y="498" text-anchor="middle" font-size="13" fill="#57606a">2026-04-13</text>
+<line x1="656.0" y1="472" x2="656.0" y2="479" stroke="#8b98a5" stroke-width="1.5"/><text x="656.0" y="498" text-anchor="middle" font-size="13" fill="#57606a">2026-06-21</text>
+<line x1="850.0" y1="472" x2="850.0" y2="479" stroke="#8b98a5" stroke-width="1.5"/><text x="848.0" y="498" text-anchor="end" font-size="13" fill="#57606a">2026-08-29</text>
+<rect x="74" y="40" width="776" height="432" fill="none" stroke="#8b98a5" stroke-width="2" rx="3"/>
+<polyline points="74.0,462.4 88.1,454.6 93.8,449.5 96.6,439.3 116.3,431.9 127.6,422.9 316.7,414.7 344.9,407.6 378.8,400.7 381.6,392.7 381.6,384.1 404.2,376.4 429.5,368.8 429.5,361.4 429.5,351.7 435.2,343.7 438.0,337.4 452.1,329.8 454.9,321.1 457.8,311.7 460.6,302.7 463.4,296.2 466.2,286.2 469.1,278.4 474.7,272.8 477.5,263.0 480.3,255.9 483.2,247.7 486.0,238.9 494.5,232.4 497.3,225.7 502.9,214.3 502.9,208.8 502.9,201.7 517.0,191.3 517.0,185.8 542.4,175.1 545.2,169.8 550.9,159.3 556.5,153.2 604.5,143.5 613.0,136.0 621.4,129.0 629.9,120.1 635.5,112.8 646.8,105.1 714.6,97.8 841.5,88.1 841.5,78.2 841.5,71.8 844.4,62.3 844.4,55.9 844.4,48.2 850.0,39.7" fill="none" stroke="#3297d4" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="88" y="52" width="302" height="54" fill="#ffffff" stroke="#8b98a5" stroke-width="1.5" rx="6"/>
+<line x1="100" y1="69" x2="124" y2="69" stroke="#3297d4" stroke-width="3" stroke-linecap="round"/>
+<text x="132" y="74" font-size="14" fill="#1f2328">wait4xx/open-earth-data-guide</text>
+<text x="100" y="94" font-size="12" fill="#57606a">54 stars</text>
+</svg>

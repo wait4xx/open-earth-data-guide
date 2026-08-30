@@ -2139,7 +2139,7 @@ If this repository helps you, please Star, Fork, or share it with your peers!
 <h3>📈 Star History</h3>
 
 <a href="https://star-history.com/#wait4xx/open-earth-data-guide&Date">
-<img src="https://api.star-history.com/svg?repos=wait4xx/open-earth-data-guide&type=Date" alt="Star History" width="600">
+<img src="docs/stats/stars.svg" alt="Star History" width="600">
 </a>
 
 </div>
