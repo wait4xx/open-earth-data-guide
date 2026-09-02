@@ -35,6 +35,8 @@
 ---
 
 ### 📢 最新动态
+> **2026-09-02** · 🔍 ECMWF Open Data 四渠道下载实测：确认 AWS S3 桶级 GET 限流机制（间歇 503、HEAD 正常；IDM 多线程与 awscli adaptive 重试实测可用），新增 Azure Planetary Computer 渠道条目（新旧格式全覆盖 + SAS token 匿名访问）与 AWS URL 拼接规则说明；IFS_UCAR 条目补充短时效与高斯网格提示。（中英同步）
+>
 > **2026-07-26** · 🤖 大模型预报区完善：将 `noaa-oar-mlwp-data` S3 桶的**目录结构与命名规则**（模型码 `FOUR`/`PANG`/`GRAP`、版本号、`GFS`/`IFS` 初始化系统、起报时刻等字段）及 **FourCastNet v1 / v2-small / Pangu-Weather / GraphCast Operational** 各模型可用变量清单**内联**进 AI 模型集合条目（中英同步），关键访问信息不再仅外链 txt 原文
 >
 > **2026-06-20** · 🗂️ 重构 IRI Data Library 与 CMEMS 条目：IRI 收敛为「再分析」入口并按数据类型将数据集分散到各主题章节（各条目标 `via IRI`，附**已登录实测**的 `SOURCES/...` 路径），新增 COADS / Levitus / ISCCP / NMME / ENSO-PDO-QBO 条目；CMEMS 拆分为门户 + GLORYS / WAVERY / BGC / DUACS / OSTIA 五个独立条目（OPeNDAP/THREDDS 已退役，现经 Marine Data Store）。实测发现 IRI 不含 ERA5 / MERRA-2 / SODA，已移除相关条目。
@@ -228,7 +230,7 @@
 ![更新](https://img.shields.io/badge/更新-每日4次-orange?style=flat-square)
 ![来源](https://img.shields.io/badge/来源-UCAR-800080?style=flat-square)
 
-🔗 [IFS_UCAR](https://gdex.ucar.edu/datasets/d113001/dataaccess/#) · 📅 2016 年 1 月 1 日至今
+🔗 [IFS_UCAR](https://gdex.ucar.edu/datasets/d113001/dataaccess/#) · 📅 2016 年 1 月 1 日至今 · ⚠️ 预报仅 +6h/+12h（TOGA 产品 +36h），不可作长时效源 · 📐 N1280 高斯纬度（非等距网格） · 🚀 需代理（直连超时，代理实测 ~9MB/s）
 
 ---
 
@@ -251,7 +253,19 @@
 ![更新](https://img.shields.io/badge/更新-每日4次-orange?style=flat-square)
 ![来源](https://img.shields.io/badge/来源-AWS-FF9900?style=flat-square)
 
-🔗 [AWS-S3](https://ecmwf-forecasts.s3.amazonaws.com/) · 📅 2023 年 3 月 18 日至今 · ⚠️ 需 awscli 或补全 URL
+🔗 [AWS-S3](https://ecmwf-forecasts.s3.amazonaws.com/) · 📅 2023 年 3 月 18 日至今 · ⚠️ GET 间歇 503（桶级限流，HEAD 正常） · ✅ IDM 多线程实测可用
+
+---
+
+**IFS** · 确定性预报
+
+![分辨率](https://img.shields.io/badge/分辨率-0.25°/0.4°-blue?style=flat-square)
+![时效](https://img.shields.io/badge/时效-0~144h(3h)_144~360h(6h)-green?style=flat-square)
+![更新](https://img.shields.io/badge/更新-每日4次-orange?style=flat-square)
+![来源](https://img.shields.io/badge/来源-Azure-0078D4?style=flat-square)
+![魔法](https://img.shields.io/badge/魔法-√-3126F0?style=flat-square)
+
+🔗 [🪜 ECMWF_AZURE](https://ai4edataeuwest.blob.core.windows.net/ecmwf) · 📅 2023 年至今（新旧格式全覆盖） · 🔑 SAS token 匿名访问
 
 ---
 
@@ -274,7 +288,19 @@
 ![更新](https://img.shields.io/badge/更新-每日4次-orange?style=flat-square)
 ![来源](https://img.shields.io/badge/来源-AWS-FF9900?style=flat-square)
 
-🔗 [AWS-S3](https://ecmwf-forecasts.s3.amazonaws.com/) · 📅 2023 年 3 月 18 日至今 · ⚠️ 需 awscli 或补全 URL
+🔗 [AWS-S3](https://ecmwf-forecasts.s3.amazonaws.com/) · 📅 2023 年 3 月 18 日至今 · ⚠️ GET 间歇 503（桶级限流，HEAD 正常） · ✅ IDM 多线程实测可用
+
+---
+
+**EFS** · 集合预报
+
+![分辨率](https://img.shields.io/badge/分辨率-0.25°/0.4°-blue?style=flat-square)
+![时效](https://img.shields.io/badge/时效-0~144h(3h)_144~360h(6h)-green?style=flat-square)
+![更新](https://img.shields.io/badge/更新-每日4次-orange?style=flat-square)
+![来源](https://img.shields.io/badge/来源-Azure-0078D4?style=flat-square)
+![魔法](https://img.shields.io/badge/魔法-√-3126F0?style=flat-square)
+
+🔗 [🪜 ECMWF_AZURE](https://ai4edataeuwest.blob.core.windows.net/ecmwf) · 📅 2023 年至今（新旧格式全覆盖） · 🔑 SAS token 匿名访问
 
 </details>
 
@@ -474,7 +500,7 @@ North American Multi-Model Ensemble：多机构耦合模式季节预报 + 回报
 ![更新](https://img.shields.io/badge/更新-每日4次-orange?style=flat-square)
 ![来源](https://img.shields.io/badge/来源-AWS-FF9900?style=flat-square)
 
-🔗 [AWS-S3](https://ecmwf-forecasts.s3.amazonaws.com/) · 📅 2024 年 2 月 29 日至今 · ⚠️ 需 awscli 或补全 URL
+🔗 [AWS-S3](https://ecmwf-forecasts.s3.amazonaws.com/) · 📅 2024 年 2 月 29 日至今 · ⚠️ GET 间歇 503（桶级限流，HEAD 正常） · ✅ IDM 多线程实测可用
 
 ---
 
@@ -485,7 +511,7 @@ North American Multi-Model Ensemble：多机构耦合模式季节预报 + 回报
 ![更新](https://img.shields.io/badge/更新-每日4次-orange?style=flat-square)
 ![来源](https://img.shields.io/badge/来源-AWS-FF9900?style=flat-square)
 
-🔗 [AWS-S3](https://ecmwf-forecasts.s3.amazonaws.com/) · ⚠️ 需 awscli 或补全 URL
+🔗 [AWS-S3](https://ecmwf-forecasts.s3.amazonaws.com/) · ⚠️ GET 间歇 503（桶级限流，HEAD 正常） · ✅ IDM 多线程实测可用
 
 </details>
 

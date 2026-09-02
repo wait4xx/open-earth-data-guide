@@ -35,6 +35,8 @@ This repository is the **resource guide** — it focuses on “what data exists 
 ---
 
 ### 📢 Latest Updates
+> **2026-09-02** · 🔍 ECMWF Open Data four-channel download field test: confirmed AWS S3 bucket-level GET throttling (intermittent 503, HEAD unaffected; IDM multi-thread & awscli adaptive retry verified as workarounds), added Azure Planetary Computer channel entries (old + new path formats, SAS-token anonymous access) plus AWS URL construction rules; IFS_UCAR entry annotated with short lead-time & Gaussian-grid caveats. (zh + en)
+>
 > **2026-07-26** · 🤖 AI-model section expanded: inlined the `noaa-oar-mlwp-data` S3 bucket **directory structure & naming** (model code `FOUR`/`PANG`/`GRAP`, version, `GFS`/`IFS` init system, init time, forecast-hour fields) and the **FourCastNet v1 / v2-small / Pangu-Weather / GraphCast Operational** variable lists into the AI Model Collection entry (zh + en), so key access details no longer live only behind the linked txt file
 >
 > **2026-06-20** · 🗂️ Restructured IRI Data Library & CMEMS entries: IRI is now a "Reanalysis" entrypoint with datasets distributed into their topical sections by data type (each tagged `via IRI`, with **login-verified** `SOURCES/...` paths); added COADS / Levitus / ISCCP / NMME / ENSO-PDO-QBO entries. CMEMS split into a portal block + GLORYS / WAVERY / BGC / DUACS / OSTIA standalone entries (OPeNDAP/THREDDS retired, now via Marine Data Store). Live probing found IRI does NOT host ERA5 / MERRA-2 / SODA — removed from entries.
@@ -228,7 +230,7 @@ This repository is the **resource guide** — it focuses on “what data exists 
 ![Update](https://img.shields.io/badge/Update-4x_daily-orange?style=flat-square)
 ![Source](https://img.shields.io/badge/Source-UCAR-800080?style=flat-square)
 
-🔗 [IFS_UCAR](https://gdex.ucar.edu/datasets/d113001/dataaccess/#) · 📅 2016-01-01 to present
+🔗 [IFS_UCAR](https://gdex.ucar.edu/datasets/d113001/dataaccess/#) · 📅 2016-01-01 to present · ⚠️ Forecast only +6h/+12h (TOGA product +36h) — not a long-lead source · 📐 N1280 Gaussian latitudes (non-regular grid) · 🚀 Proxy recommended (direct timeout; ~9MB/s via proxy)
 
 ---
 
@@ -251,7 +253,19 @@ This repository is the **resource guide** — it focuses on “what data exists 
 ![Update](https://img.shields.io/badge/Update-4x_daily-orange?style=flat-square)
 ![Source](https://img.shields.io/badge/Source-AWS-FF9900?style=flat-square)
 
-🔗 [AWS-S3](https://ecmwf-forecasts.s3.amazonaws.com/) · 📅 2023-03-18 to present · ⚠️ awscli or full URL required
+🔗 [AWS-S3](https://ecmwf-forecasts.s3.amazonaws.com/) · 📅 2023-03-18 to present · ⚠️ Intermittent 503 on GET (bucket-level throttling; HEAD OK) · ✅ IDM multi-thread verified
+
+---
+
+**IFS** · Deterministic Forecast
+
+![Resolution](https://img.shields.io/badge/Resolution-0.25°/0.4°-blue?style=flat-square)
+![Range](https://img.shields.io/badge/Range-0~144h(3h)_144~360h(6h)-green?style=flat-square)
+![Update](https://img.shields.io/badge/Update-4x_daily-orange?style=flat-square)
+![Source](https://img.shields.io/badge/Source-Azure-0078D4?style=flat-square)
+![VPN](https://img.shields.io/badge/VPN-√-3126F0?style=flat-square)
+
+🔗 [🪜 ECMWF_AZURE](https://ai4edataeuwest.blob.core.windows.net/ecmwf) · 📅 2023 to present (old + new formats) · 🔑 SAS-token anonymous access
 
 ---
 
@@ -274,7 +288,19 @@ This repository is the **resource guide** — it focuses on “what data exists 
 ![Update](https://img.shields.io/badge/Update-4x_daily-orange?style=flat-square)
 ![Source](https://img.shields.io/badge/Source-AWS-FF9900?style=flat-square)
 
-🔗 [AWS-S3](https://ecmwf-forecasts.s3.amazonaws.com/) · 📅 2023-03-18 to present · ⚠️ awscli or full URL required
+🔗 [AWS-S3](https://ecmwf-forecasts.s3.amazonaws.com/) · 📅 2023-03-18 to present · ⚠️ Intermittent 503 on GET (bucket-level throttling; HEAD OK) · ✅ IDM multi-thread verified
+
+---
+
+**EFS** · Ensemble Forecast
+
+![Resolution](https://img.shields.io/badge/Resolution-0.25°/0.4°-blue?style=flat-square)
+![Range](https://img.shields.io/badge/Range-0~144h(3h)_144~360h(6h)-green?style=flat-square)
+![Update](https://img.shields.io/badge/Update-4x_daily-orange?style=flat-square)
+![Source](https://img.shields.io/badge/Source-Azure-0078D4?style=flat-square)
+![VPN](https://img.shields.io/badge/VPN-√-3126F0?style=flat-square)
+
+🔗 [🪜 ECMWF_AZURE](https://ai4edataeuwest.blob.core.windows.net/ecmwf) · 📅 2023 to present (old + new formats) · 🔑 SAS-token anonymous access
 
 </details>
 
@@ -474,7 +500,7 @@ North American Multi-Model Ensemble: multi-institution coupled-model seasonal fo
 ![Update](https://img.shields.io/badge/Update-4x_daily-orange?style=flat-square)
 ![Source](https://img.shields.io/badge/Source-AWS-FF9900?style=flat-square)
 
-🔗 [AWS-S3](https://ecmwf-forecasts.s3.amazonaws.com/) · 📅 2024-02-29 to present · ⚠️ awscli or full URL required
+🔗 [AWS-S3](https://ecmwf-forecasts.s3.amazonaws.com/) · 📅 2024-02-29 to present · ⚠️ Intermittent 503 on GET (bucket-level throttling; HEAD OK) · ✅ IDM multi-thread verified
 
 ---
 
@@ -485,7 +511,7 @@ North American Multi-Model Ensemble: multi-institution coupled-model seasonal fo
 ![Update](https://img.shields.io/badge/Update-4x_daily-orange?style=flat-square)
 ![Source](https://img.shields.io/badge/Source-AWS-FF9900?style=flat-square)
 
-🔗 [AWS-S3](https://ecmwf-forecasts.s3.amazonaws.com/) · ⚠️ awscli or full URL required
+🔗 [AWS-S3](https://ecmwf-forecasts.s3.amazonaws.com/) · ⚠️ Intermittent 503 on GET (bucket-level throttling; HEAD OK) · ✅ IDM multi-thread verified
 
 </details>
 
