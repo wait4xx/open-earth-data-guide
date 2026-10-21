@@ -35,6 +35,12 @@ This repository is the **resource guide** — it focuses on “what data exists 
 ---
 
 ### 📢 Latest Updates
+
+<details>
+<summary><b>📖 Expand update history</b> (latest 2026-10-21: 0.1° distribution grid added to ECMWF open data)</summary>
+
+> **2026-10-21** · 🔍 ECMWF open data adds a 0.1° (~9 km) distribution grid (effective 10-20): the whole IFS family (`oper`/`enfo`/`waef`/`wave`) gains an `ifs/0p1/` directory; surface and pressure-level fields are split into separate `-sfc`/`-pl` files, each with an `.index`; published ~2 h later than 0.25°, with extra fields for Forecast in a Box and limited-area model initialisation beyond the core set. Live-verified on the official portal / AWS / GCS (AWS 12z `oper` ≈ 370 MB(pl) + 78 MB(sfc) per step, same step cadence as 0.25°; EFS `-pl` files reach 15 GB+); AIFS stays 0.25°. Also verified that the 06z/18z deterministic directory has been unified from `scda` to `oper` (`scda` returns 404) — download script fixed accordingly and now supports 0.1° downloads. (zh + en)
+>
 > **2026-09-02** · 🔍 ECMWF Open Data four-channel download field test: confirmed AWS S3 bucket-level GET throttling (intermittent 503, HEAD unaffected; IDM multi-thread & awscli adaptive retry verified as workarounds), added Azure Planetary Computer channel entries (old + new path formats, SAS-token anonymous access) plus AWS URL construction rules; IFS_UCAR entry annotated with short lead-time & Gaussian-grid caveats. (zh + en)
 >
 > **2026-07-26** · 🤖 AI-model section expanded: inlined the `noaa-oar-mlwp-data` S3 bucket **directory structure & naming** (model code `FOUR`/`PANG`/`GRAP`, version, `GFS`/`IFS` init system, init time, forecast-hour fields) and the **FourCastNet v1 / v2-small / Pangu-Weather / GraphCast Operational** variable lists into the AI Model Collection entry (zh + en), so key access details no longer live only behind the linked txt file
@@ -54,6 +60,8 @@ This repository is the **resource guide** — it focuses on “what data exists 
 > **2025-12-09** · ✨ ECMWF download script upgraded — now supports **IFS / EFS / AIFS / AIEFS** full data series
 >
 > **2025-12-05** · 🚀 ECMWF download script released — supports **4-thread parallel downloads**, significantly improving efficiency
+
+</details>
 
 ---
 
@@ -98,29 +106,69 @@ This repository is the **resource guide** — it focuses on “what data exists 
 
 **IFS** · Deterministic Forecast
 
-![Resolution](https://img.shields.io/badge/Resolution-0.25°-blue?style=flat-square)
+![Resolution](https://img.shields.io/badge/Resolution-0.1°/0.25°-blue?style=flat-square)
 ![Range](https://img.shields.io/badge/Range-0~144h(3h)_144~360h(6h)-green?style=flat-square)
 ![Update](https://img.shields.io/badge/Update-4x_daily-orange?style=flat-square)
 ![Source](https://img.shields.io/badge/Source-Official-9CF?style=flat-square)
 
 🔗 [ECMWF Open Data](https://data.ecmwf.int/forecasts/) · 📅 Last 4 days
+> 🆕 **0.1° (~9 km)**: `ifs/0p1/` directory (since 2026-10-20), `-sfc`/`-pl` split files + `.index`, published ~2 h later than 0.25°, adds Forecast in a Box / limited-area-model initialisation fields; 0.25° remains combined files on the normal schedule ([official 0.1° notes](https://confluence.ecmwf.int/spaces/DAC/pages/738041087/ECMWF+open+data+what+s+new+at+0.1%C2%B0))
 
 ---
 
 **EFS** · Ensemble Forecast
 
-![Resolution](https://img.shields.io/badge/Resolution-0.25°-blue?style=flat-square)
+![Resolution](https://img.shields.io/badge/Resolution-0.1°/0.25°-blue?style=flat-square)
 ![Range](https://img.shields.io/badge/Range-0~144h(3h)_144~360h(6h)-green?style=flat-square)
 ![Update](https://img.shields.io/badge/Update-4x_daily-orange?style=flat-square)
 ![Source](https://img.shields.io/badge/Source-Official-9CF?style=flat-square)
 
 🔗 [ECMWF Open Data](https://data.ecmwf.int/forecasts/) · 📅 Last 4 days
+> 🆕 The 0.1° tier also covers the ensemble (`ifs/0p1/enfo/`, `-ef-sfc`/`-ef-pl` split files; `-pl` files reach 15 GB+ — low-bandwidth users can take `-sfc` only)
 
 ---
 
 **IFS Data Format Guide**
 
 > ![ec_file](./pics/ec_file.png)
+>
+> 🆕 **0.1° (`0p1`) directory layout** (since 2026-10-20): `{YYYYMMDD}/{HH}z/ifs/0p1/{oper|enfo|waef|wave}/`, file name `{YYYYMMDDHHMMSS}-{step}h-{stream}-{fc|ef}-{sfc|pl}.grib2` (with matching `.index`). Surface and pressure-level fields are **split into separate files** so low-bandwidth users can take `-sfc` only; the 06z/18z deterministic run also lives under `oper/` (the `scda` directory is retired); step cadence matches 0.25° (0–144h every 3 h / 150–360h every 6 h), published ~2 h later.
+>
+> **📋 Variable list** (parsed from the 20261020 12z `.index` files; 0p1 and 0p25 share the same parameter set — official notes say the 0.1° tier will add fields for Forecast in a Box / LAM initialisation)
+>
+> **Single-level / surface fields** (46 items; in the `-sfc` file for 0p1, in the combined file for 0p25)
+>
+> | | | | |
+> |---|---|---|---|
+> | `2t` 2 m temperature | `2d` 2 m dewpoint | `skt` skin temperature | `mx2t3`/`mn2t3` 3 h max/min 2 m temp |
+> | `10u`/`10v` 10 m wind | `100u`/`100v` 100 m wind | `10fg` instant gust (0 h only) | `10fg3` 3 h max gust (step>0) |
+> | `sp` surface pressure | `msl` mean sea-level pressure | `zos` zero-degree level | `mucape` most-unstable CAPE |
+> | `tp` total precipitation | `tprate` precip rate | `cp` convective precipitation | `ptype` precipitation type |
+> | `ro` runoff | `tcrw` total column rain water | `sf` snowfall (water eq.) | `sd` snow depth (water eq.) |
+> | `asn` snow albedo | `rsn` snow density | `svn` snowmelt | `sithick` sea-ice thickness |
+> | `tcc` total cloud cover | `lcc` low cloud cover | `mcc` medium cloud cover | `hcc` high cloud cover |
+> | `tcwv` total column water vapour | `tcw` total column water | `tclw` column cloud liquid | `tciw` column cloud ice |
+> | `ssrd` surface solar radiation (accum) | `ssr` net solar radiation | `strd` surface thermal radiation (accum) | `str` net thermal radiation |
+> | `ttr` top net thermal radiation | `sve` snow evaporation | `ewss` eastward turb. stress | `nsss` northward turb. stress |
+> | `lsm` land-sea mask | `z` surface geopotential (0 h) | `sdor` orography std-dev (0 h) | `slor` orography slope (0 h) |
+>
+> **Soil levels** (levtype=sol, 4 layers ≈ 0-7 / 7-28 / 28-100 / 100-289 cm; inside the `-sfc` file for 0p1 too): `sot` soil temperature · `vsw` volumetric soil water
+>
+> **Pressure levels** (in the `-pl` file for 0p1, combined file for 0p25; 14 levels 10/50/100/150/200/250/300/400/500/600/700/850/925/1000 hPa)
+>
+> | | | | |
+> |---|---|---|---|
+> | `z` geopotential | `gh` geopotential height | `t` temperature | `q` specific humidity |
+> | `r` relative humidity | `u`/`v` wind components | `w` vertical velocity | `vo` vorticity / `d` divergence |
+>
+> **Waves** (`wave` deterministic / `waef` ensemble, `-sfc` only)
+>
+> | | | | |
+> |---|---|---|---|
+> | `swh` significant wave height | `mwd` mean wave direction | `mwp` mean wave period | `mp2` second-moment mean period |
+> | `pp1d` peak period | `cdww` drag coefficient | `wmb` bathymetry | `h1012`~`h2530` period-band (10-30 s) wave heights |
+>
+> **EFS (`enfo`, 50 perturbed members) differences**: no static fields (`z`/`sdor`/`slor`), pressure levels without `z` (9 params)
 
 
 </details>
@@ -236,7 +284,7 @@ This repository is the **resource guide** — it focuses on “what data exists 
 
 **IFS** · Deterministic Forecast
 
-![Resolution](https://img.shields.io/badge/Resolution-0.25°/0.4°-blue?style=flat-square)
+![Resolution](https://img.shields.io/badge/Resolution-0.1°/0.25°/0.4°-blue?style=flat-square)
 ![Range](https://img.shields.io/badge/Range-0~144h(3h)_144~360h(6h)-green?style=flat-square)
 ![Update](https://img.shields.io/badge/Update-4x_daily-orange?style=flat-square)
 ![Source](https://img.shields.io/badge/Source-Google-4285F4?style=flat-square)
@@ -248,7 +296,7 @@ This repository is the **resource guide** — it focuses on “what data exists 
 
 **IFS** · Deterministic Forecast
 
-![Resolution](https://img.shields.io/badge/Resolution-0.25°/0.4°-blue?style=flat-square)
+![Resolution](https://img.shields.io/badge/Resolution-0.1°/0.25°/0.4°-blue?style=flat-square)
 ![Range](https://img.shields.io/badge/Range-0~144h(3h)_144~360h(6h)-green?style=flat-square)
 ![Update](https://img.shields.io/badge/Update-4x_daily-orange?style=flat-square)
 ![Source](https://img.shields.io/badge/Source-AWS-FF9900?style=flat-square)
@@ -271,7 +319,7 @@ This repository is the **resource guide** — it focuses on “what data exists 
 
 **EFS** · Ensemble Forecast
 
-![Resolution](https://img.shields.io/badge/Resolution-0.25°/0.4°-blue?style=flat-square)
+![Resolution](https://img.shields.io/badge/Resolution-0.1°/0.25°/0.4°-blue?style=flat-square)
 ![Range](https://img.shields.io/badge/Range-0~144h(3h)_144~360h(6h)-green?style=flat-square)
 ![Update](https://img.shields.io/badge/Update-4x_daily-orange?style=flat-square)
 ![Source](https://img.shields.io/badge/Source-Google-4285F4?style=flat-square)
@@ -283,7 +331,7 @@ This repository is the **resource guide** — it focuses on “what data exists 
 
 **EFS** · Ensemble Forecast
 
-![Resolution](https://img.shields.io/badge/Resolution-0.25°/0.4°-blue?style=flat-square)
+![Resolution](https://img.shields.io/badge/Resolution-0.1°/0.25°/0.4°-blue?style=flat-square)
 ![Range](https://img.shields.io/badge/Range-0~144h(3h)_144~360h(6h)-green?style=flat-square)
 ![Update](https://img.shields.io/badge/Update-4x_daily-orange?style=flat-square)
 ![Source](https://img.shields.io/badge/Source-AWS-FF9900?style=flat-square)

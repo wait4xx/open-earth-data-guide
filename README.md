@@ -35,6 +35,12 @@
 ---
 
 ### 📢 最新动态
+
+<details>
+<summary><b>📖 展开更新历史</b>（最新 2026-10-21：ECMWF 开放数据上线 0.1° 分发网格）</summary>
+
+> **2026-10-21** · 🔍 ECMWF 开放数据上线 0.1°（约 9 km）分发网格（10-20 起）：IFS 全系（`oper`/`enfo`/`waef`/`wave`）新增 `ifs/0p1/` 目录，地面/气压层拆分为 `-sfc`/`-pl` 两种文件并各带 `.index`，比 0.25° 晚约 2 小时上线，参数在核心集之外新增 Forecast in a Box 与区域模式初始化所需场。实测官方门户 / AWS / GCS 三渠道均已同步（AWS 12z `oper` 单时效约 370MB(pl)+78MB(sfc)，时效步长与 0.25° 一致；EFS `-pl` 单文件可达 15GB+）；AIFS 仍为 0.25°。另实测发现 06z/18z 确定性预报目录已由 `scda` 统一为 `oper`（`scda` 404），下载脚本已同步修正并新增 0.1° 下载支持。（中英同步）
+>
 > **2026-09-02** · 🔍 ECMWF Open Data 四渠道下载实测：确认 AWS S3 桶级 GET 限流机制（间歇 503、HEAD 正常；IDM 多线程与 awscli adaptive 重试实测可用），新增 Azure Planetary Computer 渠道条目（新旧格式全覆盖 + SAS token 匿名访问）与 AWS URL 拼接规则说明；IFS_UCAR 条目补充短时效与高斯网格提示。（中英同步）
 >
 > **2026-07-26** · 🤖 大模型预报区完善：将 `noaa-oar-mlwp-data` S3 桶的**目录结构与命名规则**（模型码 `FOUR`/`PANG`/`GRAP`、版本号、`GFS`/`IFS` 初始化系统、起报时刻等字段）及 **FourCastNet v1 / v2-small / Pangu-Weather / GraphCast Operational** 各模型可用变量清单**内联**进 AI 模型集合条目（中英同步），关键访问信息不再仅外链 txt 原文
@@ -54,6 +60,8 @@
 > **2025-12-09** · ✨ ECMWF 下载脚本升级 — 新增 **IFS / EFS / AIFS / AIEFS** 全系列数据支持
 >
 > **2025-12-05** · 🚀 ECMWF 下载脚本发布 — 支持 **4 线程并行下载**，大幅提升效率
+
+</details>
 
 ---
 
@@ -98,29 +106,69 @@
 
 **IFS** · 确定性预报
 
-![分辨率](https://img.shields.io/badge/分辨率-0.25°-blue?style=flat-square)
+![分辨率](https://img.shields.io/badge/分辨率-0.1°/0.25°-blue?style=flat-square)
 ![时效](https://img.shields.io/badge/时效-0~144h(3h)_144~360h(6h)-green?style=flat-square)
 ![更新](https://img.shields.io/badge/更新-每日4次-orange?style=flat-square)
 ![来源](https://img.shields.io/badge/来源-官方-9CF?style=flat-square)
 
 🔗 [ECMWF Open Data](https://data.ecmwf.int/forecasts/) · 📅 最近 4 日
+> 🆕 **0.1°（约 9 km）**：`ifs/0p1/` 目录（2026-10-20 起），`-sfc`/`-pl` 分文件 + `.index`，比 0.25° 晚约 2h 上线，新增 Forecast in a Box / 区域模式初始化额外场；0.25° 仍为合并文件、按常规时刻分发（[0.1° 官方说明](https://confluence.ecmwf.int/spaces/DAC/pages/738041087/ECMWF+open+data+what+s+new+at+0.1%C2%B0)）
 
 ---
 
 **EFS** · 集合预报
 
-![分辨率](https://img.shields.io/badge/分辨率-0.25°-blue?style=flat-square)
+![分辨率](https://img.shields.io/badge/分辨率-0.1°/0.25°-blue?style=flat-square)
 ![时效](https://img.shields.io/badge/时效-0~144h(3h)_144~360h(6h)-green?style=flat-square)
 ![更新](https://img.shields.io/badge/更新-每日4次-orange?style=flat-square)
 ![来源](https://img.shields.io/badge/来源-官方-9CF?style=flat-square)
 
 🔗 [ECMWF Open Data](https://data.ecmwf.int/forecasts/) · 📅 最近 4 日
+> 🆕 0.1° 同步覆盖集合预报（`ifs/0p1/enfo/`，`-ef-sfc`/`-ef-pl` 分文件；`-pl` 单文件 15GB+，低带宽可只取 `-sfc`）
 
 ---
 
 **IFS 数据格式说明**
 
 > ![ec_file](./pics/ec_file.png)
+>
+> 🆕 **0.1°（`0p1`）目录结构**（2026-10-20 起）：`{YYYYMMDD}/{HH}z/ifs/0p1/{oper|enfo|waef|wave}/`，文件名 `{YYYYMMDDHHMMSS}-{step}h-{stream}-{fc|ef}-{sfc|pl}.grib2`（附同名 `.index`）。地面场与气压层**分文件**，低带宽环境可只取 `-sfc`；06z/18z 确定性预报亦在 `oper/`（`scda` 目录已退役）；时效步长与 0.25° 一致（0~144h 每 3h / 150~360h 每 6h），上线约晚 2 小时。
+>
+> **📋 变量清单**（解析 20261020 12z 各 `.index` 实测；0p1 与 0p25 参数集一致，官方说明 0.1° 将面向 Forecast in a Box / 区域模式初始化提供扩展场）
+>
+> **单层/地面场**（46 项，0p1 在 `-sfc` 文件，0p25 在合并文件）
+>
+> | | | | |
+> |---|---|---|---|
+> | `2t` 2m 气温 | `2d` 2m 露点 | `skt` 地表温度 | `mx2t3`/`mn2t3` 3h 最高/最低 2m 气温 |
+> | `10u`/`10v` 10m 风分量 | `100u`/`100v` 100m 风分量 | `10fg` 瞬时阵风（仅 0h） | `10fg3` 3h 最大阵风（step>0） |
+> | `sp` 地面气压 | `msl` 海平面气压 | `zos` 零度层高度 | `mucape` 最不稳定 CAPE |
+> | `tp` 总降水（累计） | `tprate` 降水率 | `cp` 对流降水 | `ptype` 降水类型 |
+> | `ro` 径流 | `tcrw` 柱雨水总量 | `sf` 降雪（水当量） | `sd` 雪深（水当量） |
+> | `asn` 雪反照率 | `rsn` 雪密度 | `svn` 融雪 | `sithick` 海冰厚度 |
+> | `tcc` 总云量 | `lcc` 低云量 | `mcc` 中云量 | `hcc` 高云量 |
+> | `tcwv` 柱水汽总量 | `tcw` 柱总水量 | `tclw` 柱云水 | `tciw` 柱云冰 |
+> | `ssrd` 向下短波辐射（累计） | `ssr` 净短波辐射 | `strd` 向下长波辐射（累计） | `str` 净长波辐射 |
+> | `ttr` 大气顶净长波辐射 | `sve` 雪面蒸发 | `ewss` 东向湍流应力 | `nsss` 北向湍流应力 |
+> | `lsm` 陆海掩码 | `z` 地表位势（仅 0h） | `sdor` 地形起伏（仅 0h） | `slor` 地形坡度（仅 0h） |
+>
+> **土壤层**（levtype=sol，4 层约 0-7 / 7-28 / 28-100 / 100-289 cm；0p1 亦在 `-sfc` 文件内）：`sot` 土壤温度 · `vsw` 土壤体积含水量
+>
+> **气压层**（0p1 在 `-pl` 文件；0p25 在合并文件；14 层 10/50/100/150/200/250/300/400/500/600/700/850/925/1000 hPa）
+>
+> | | | | |
+> |---|---|---|---|
+> | `z` 位势 | `gh` 位势高度 | `t` 温度 | `q` 比湿 |
+> | `r` 相对湿度 | `u`/`v` 风分量 | `w` 垂直速度 | `vo` 涡度 / `d` 散度 |
+>
+> **波浪**（`wave` 确定性 / `waef` 集合，仅 `-sfc`）
+>
+> | | | | |
+> |---|---|---|---|
+> | `swh` 有效波高 | `mwd` 平均波向 | `mwp` 平均波周期 | `mp2` 二阶矩平均周期 |
+> | `pp1d` 峰值周期 | `cdww` 拖曳系数 | `wmb` 水深 | `h1012`~`h2530` 周期分段（10-30s）有效波高 |
+>
+> **EFS（`enfo`，50 个扰动成员）差异**：无静态场（`z`/`sdor`/`slor`），气压层无 `z`（9 参数）
 
 
 </details>
@@ -236,7 +284,7 @@
 
 **IFS** · 确定性预报
 
-![分辨率](https://img.shields.io/badge/分辨率-0.25°/0.4°-blue?style=flat-square)
+![分辨率](https://img.shields.io/badge/分辨率-0.1°/0.25°/0.4°-blue?style=flat-square)
 ![时效](https://img.shields.io/badge/时效-0~144h(3h)_144~360h(6h)-green?style=flat-square)
 ![更新](https://img.shields.io/badge/更新-每日4次-orange?style=flat-square)
 ![来源](https://img.shields.io/badge/来源-Google-4285F4?style=flat-square)
@@ -248,7 +296,7 @@
 
 **IFS** · 确定性预报
 
-![分辨率](https://img.shields.io/badge/分辨率-0.25°/0.4°-blue?style=flat-square)
+![分辨率](https://img.shields.io/badge/分辨率-0.1°/0.25°/0.4°-blue?style=flat-square)
 ![时效](https://img.shields.io/badge/时效-0~144h(3h)_144~360h(6h)-green?style=flat-square)
 ![更新](https://img.shields.io/badge/更新-每日4次-orange?style=flat-square)
 ![来源](https://img.shields.io/badge/来源-AWS-FF9900?style=flat-square)
@@ -271,7 +319,7 @@
 
 **EFS** · 集合预报
 
-![分辨率](https://img.shields.io/badge/分辨率-0.25°/0.4°-blue?style=flat-square)
+![分辨率](https://img.shields.io/badge/分辨率-0.1°/0.25°/0.4°-blue?style=flat-square)
 ![时效](https://img.shields.io/badge/时效-0~144h(3h)_144~360h(6h)-green?style=flat-square)
 ![更新](https://img.shields.io/badge/更新-每日4次-orange?style=flat-square)
 ![来源](https://img.shields.io/badge/来源-Google-4285F4?style=flat-square)
@@ -283,7 +331,7 @@
 
 **EFS** · 集合预报
 
-![分辨率](https://img.shields.io/badge/分辨率-0.25°/0.4°-blue?style=flat-square)
+![分辨率](https://img.shields.io/badge/分辨率-0.1°/0.25°/0.4°-blue?style=flat-square)
 ![时效](https://img.shields.io/badge/时效-0~144h(3h)_144~360h(6h)-green?style=flat-square)
 ![更新](https://img.shields.io/badge/更新-每日4次-orange?style=flat-square)
 ![来源](https://img.shields.io/badge/来源-AWS-FF9900?style=flat-square)
