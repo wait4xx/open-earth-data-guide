@@ -401,16 +401,23 @@ def get_url(data_symbol):
     url_ecmwf = "https://data.ecmwf.int/forecasts/"
     url_gfs = "https://nomads.ncep.noaa.gov/pub/data/nccf/com/gfs/prod/gfs."
     if data_symbol == 'IFS':
+        # scda 目录已退役（2026-10 实测 404），06z/18z 确定性预报统一在 oper/
         url_input = "/ifs/0p25/oper/"
-        url_input = "/ifs/0p25/scda/"
+    elif data_symbol == 'IFS01':
+        # 0.1°（约9km）分发网格（2026-10-20 起），-sfc/-pl 分文件，比 0p25 晚约2h上线
+        url_input = "/ifs/0p1/oper/"
     elif data_symbol == 'EFS':
         url_input = "/ifs/0p25/enfo/"
+    elif data_symbol == 'EFS01':
+        url_input = "/ifs/0p1/enfo/"
     elif data_symbol == 'AIFS':
         url_input = "/aifs-single/0p25/oper/"
     elif data_symbol == 'AIEFS':
         url_input = "/aifs-ens/0p25/enfo/"
     elif data_symbol == 'GFS':
         url_input = "/atmos/"
+    else:
+        raise ValueError(f"未知数据请求类型：{data_symbol}（可选 IFS / IFS01 / EFS / EFS01 / AIFS / AIEFS / GFS）")
 
 
     # 保存基础路径，每次循环重新计算
@@ -424,9 +431,7 @@ def get_url(data_symbol):
         hour_str = f"{cycle * 6:02d}"
 
         url_input = base_url_input
-        if data_symbol == 'IFS' and cycle in (0, 2):  # 00Z, 12Z → oper
-            url_input = url_input.replace("scda", "oper")
-        if data_symbol in ['IFS', 'EFS', 'AIFS', 'AIEFS']:
+        if data_symbol in ['IFS', 'IFS01', 'EFS', 'EFS01', 'AIFS', 'AIEFS']:
             url_latest = url_ecmwf + f"{date_str}/{hour_str}z" + url_input
         elif data_symbol == 'GFS':
             url_latest = url_gfs + f"{date_str}/{hour_str}" + url_input
@@ -468,7 +473,7 @@ if __name__ == "__main__":
     )
     
     try:
-        # 获取目标网页URL
+        # 获取目标网页URL（可选：IFS / IFS01(0.1°) / EFS / EFS01(0.1°) / AIFS / AIEFS / GFS）
         target_url = get_url('IFS')
         
         # 开始批量下载
